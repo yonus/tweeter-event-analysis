@@ -16,8 +16,9 @@ def parse_twitter_credential():
     account[TwitterApi.ACCESS_TOKEN_SECRET_PARAM_NAME] = "access token_secret"
     return  account;
 
+
 app = Flask(__name__)
-processResults = []
+
 
 
 
@@ -33,26 +34,33 @@ def process():
        tweets = searchResult["tweets"]
        tweets = [{"similarity":similarity(e.getSubject(),tweet[1]) ,"text":tweet[1]} for tweet in tweets]
        searchResult["tweets"] = list(filter(lambda tweet: tweet["similarity"] > RELATED_TWEET_SIMILARITY_THRESHOLD, tweets))
-       searchResultList.append(searchResult);
+       searchResultList.append(searchResult)
     
     analysis = Analysis(searchResultList)
     for tweetSearchResult in searchResultList:
         tweetSearchResult["analysisResult"] = analysis.analyze(tweetSearchResult)
         
        
-    return searchResultList;
-    #return jsonify(tokenized_texts)
-    """
-    for event in events:
-       print(tokenize_text(event.getSubject()))
-    """   
+    return searchResultList
 
 @app.route("/")
 def showResults():
-   processResults = process();
+   processResults = getProcessResult()
+   if processResults is not None and len(processResults) is 0:
+      processResults = process()
+      setProcessResult(processResults)
    return jsonify(processResults)
 
+def getProcessResult():
+   global processResults
+   return processResults;
+
+def setProcessResult(processResultList):
+    global processResults
+    processResults = processResults
+
 if __name__ == "__main__":
+   
     processResults = process();
     app.run(host='127.0.0.1', port=8080, debug=True)
 
