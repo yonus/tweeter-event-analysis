@@ -15,7 +15,6 @@ def parse_twitter_credential():
     return  account;
 
 
-app = Flask(__name__)
 
 
 class Processor:
@@ -50,6 +49,8 @@ class Processor:
       self.__cachedProcessResult = processResults
 
 processor = Processor()
+
+app = Flask(__name__)
 
 @app.route("/")
 def showResults():
